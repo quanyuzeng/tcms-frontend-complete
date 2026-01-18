@@ -1,233 +1,231 @@
 <template>
   <div class="page-container">
+    <!-- 页头 -->
     <div class="page-header">
-      <h2>{{ $t("题库管理") }}</h2>
+      <el-row justify="space-between" align="middle">
+        <el-col :span="12"><h2>{{ $t('nav.questionBanks') }}</h2></el-col>
+        <el-col :span="12" style="text-align:right">
+          <el-button :icon="Download" @click="handleExport">{{ $t('common.export') }}</el-button>
+          <el-button
+            :icon="Delete"
+            type="danger"
+            :disabled="selectedRows.length===0"
+            @click="handleBatchDelete"
+          >{{ $t('common.batchDelete') }}</el-button>
+        </el-col>
+      </el-row>
     </div>
 
-    <div class="page-content">
-      <!-- 搜索表单 -->
-      <div class="search-form">
-        <el-form :inline="true" :model="searchForm">
-          <el-form-item :label="$t('题库名称')">
-            <el-input v-model="searchForm.search" placeholder="请输入题库名称" />
-          </el-form-item>
-          <el-form-item :label="$t('题库分类')">
-            <el-input v-model="searchForm.category" placeholder="请输入题库分类" />
-          </el-form-item>
-          <el-form-item :label="$t('状态')">
-            <el-select v-model="searchForm.is_active" placeholder="全部" clearable>
-              <el-option :label="$t('启用')" :value="true" />
-              <el-option :label="$t('禁用')" :value="false" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="handleSearch">{{ $t("搜索") }}</el-button>
-            <el-button @click="handleReset">{{ $t("重置") }}</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
+    <!-- 搜索卡片 -->
+    <el-card class="search-card">
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item :label="$t('exam.questionBankName')">
+          <el-input v-model="searchForm.search" clearable :placeholder="$t('common.pleaseEnter') + $t('exam.questionBankName')" />
+        </el-form-item>
+        <el-form-item :label="$t('exam.questionBankCategory')">
+          <el-input v-model="searchForm.category" clearable :placeholder="$t('common.pleaseEnter') + $t('exam.questionBankCategory')" />
+        </el-form-item>
+        <el-form-item :label="$t('common.status')">
+          <el-select v-model="searchForm.is_active" clearable :placeholder="$t('common.all')">
+            <el-option :label="$t('common.enabled')" :value="true" />
+            <el-option :label="$t('common.disabled')" :value="false" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" :icon="Search" @click="handleSearch">{{ $t('common.search') }}</el-button>
+          <el-button :icon="Refresh" @click="handleReset">{{ $t('common.reset') }}</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
 
-      <!-- 操作按钮 -->
-      <div class="action-buttons">
-        <el-button type="primary" @click="handleAdd">
-          <el-icon><Plus /></el-icon>
-          新增题库
-        </el-button>
-        <el-button @click="handleBatchDelete" :disabled="selectedRows.length === 0">
-          <el-icon><Delete /></el-icon>
-          批量删除
-        </el-button>
-      </div>
+    <!-- 数据卡片 -->
+    <el-card class="table-card">
+      <template #header>
+        <el-row align="middle">
+          <el-col :span="12">
+            <el-button type="primary" :icon="Plus" @click="handleAdd">{{ $t('common.add') + $t('exam.questionBank') }}</el-button>
+          </el-col>
+          <el-col :span="12" style="text-align:right">
+            <el-tag>{{ $t('common.total') }}：{{ pagination.total }}</el-tag>
+          </el-col>
+        </el-row>
+      </template>
 
-      <!-- 数据表格 -->
       <el-table
         ref="tableRef"
         :data="tableData"
         v-loading="loading"
-        @selection-change="handleSelectionChange"
+        stripe
         row-key="id"
-        border
+        @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="code" :label="$t('题库编码')" width="120" />
-        <el-table-column prop="name" :label="$t('题库名称')" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="category" :label="$t('题库分类')" width="120" />
-        <el-table-column prop="question_count" :label="$t('题目数量')" width="100" align="center" />
-        <el-table-column prop="total_score" :label="$t('总分值')" width="100" align="center" />
-        <el-table-column prop="is_active" :label="$t('状态')" width="100" align="center">
-          <template #default="{ row }">
-            <el-tag :type="row.is_active ? 'success' : 'danger'">
-              {{ row.is_active ? '启用' : '禁用' }}
-            </el-tag>
+        <el-table-column prop="code" :label="$t('exam.questionBankCode')" width="120" />
+        <el-table-column prop="name" :label="$t('exam.questionBankName')" min-width="180" show-overflow-tooltip />
+        <el-table-column prop="category" :label="$t('exam.questionBankCategory')" width="120" />
+        <el-table-column prop="question_count" :label="$t('common.questionCount')" width="100" align="center" />
+        <el-table-column prop="total_score" :label="$t('common.totalScore')" width="100" align="center" />
+        <el-table-column prop="is_active" :label="$t('common.status')" width="90" align="center">
+          <template #default="{row}">
+            <el-tag :type="row.is_active?'success':'danger'">{{ row.is_active? $t('common.enabled') : $t('common.disabled') }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="created_by_name" label="创建人" width="120" />
-        <el-table-column prop="created_at" :label="$t('创建时间')" width="180" />
-        <el-table-column :label="$t('操作')" width="250" fixed="right">
-          <template #default="{ row }">
-            <el-button type="primary" link @click="handleView(row)">{{ $t("查看") }}</el-button>
-            <el-button type="primary" link @click="handleEdit(row)">{{ $t("编辑") }}</el-button>
-            <el-button type="primary" link @click="handleManageQuestions(row)">题目</el-button>
-            <el-button type="danger" link @click="handleDelete(row)">{{ $t("删除") }}</el-button>
+        <el-table-column prop="created_by_name" :label="$t('common.creator')" width="120" />
+        <el-table-column prop="created_at" :label="$t('common.createTime')" width="160" />
+        <el-table-column :label="$t('common.operate')" width="200" fixed="right" align="center">
+          <template #default="{row}">
+            <el-button type="primary" :icon="View" link @click="handleView(row)" :title="$t('common.view')" />
+            <el-button type="primary" :icon="Edit" link @click="handleEdit(row)" :title="$t('common.edit')" />
+            <el-button type="primary" :icon="Notebook" link @click="handleManageQuestions(row)" :title="$t('exam.questionManagement')" />
+            <el-button type="danger" :icon="Delete" link @click="handleDelete(row)" :title="$t('common.delete')" />
           </template>
         </el-table-column>
       </el-table>
 
-      <!-- 分页 -->
-      <div class="pagination">
-        <el-pagination
-          v-model:current-page="pagination.current"
-          v-model:page-size="pagination.size"
-          :total="pagination.total"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
-      </div>
-    </div>
+      <el-pagination
+        v-model:current-page="pagination.current"
+        v-model:page-size="pagination.size"
+        :total="pagination.total"
+        :page-sizes="[10,20,50,100]"
+        layout="total,sizes,prev,pager,next,jumper"
+        class="pagination"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </el-card>
 
-    <!-- 新增/编辑对话框 -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      width="600px"
+    <!-- 新增/编辑弹窗（优化英文支持） -->
+    <el-dialog 
+      v-model="dialogVisible" 
+      :title="dialogTitle" 
+      :width="dialogWidth" 
       @close="handleDialogClose"
+      class="question-bank-dialog"
     >
-      <el-form
-        ref="formRef"
-        :model="formData"
-        :rules="formRules"
-        label-width="120px"
-      >
+      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="auto">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item :label="$t('题库编码')" prop="code">
-              <el-input v-model="formData.code" placeholder="请输入题库编码" />
+            <el-form-item :label="$t('exam.questionBankCode')" prop="code">
+              <el-input v-model="formData.code" :placeholder="$t('common.pleaseEnter') + $t('exam.questionBankCode')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="$t('题库名称')" prop="name">
-              <el-input v-model="formData.name" placeholder="请输入题库名称" />
+            <el-form-item :label="$t('exam.questionBankName')" prop="name">
+              <el-input v-model="formData.name" :placeholder="$t('common.pleaseEnter') + $t('exam.questionBankName')" />
             </el-form-item>
           </el-col>
         </el-row>
-        
-        <el-form-item :label="$t('题库分类')" prop="category">
-          <el-input v-model="formData.category" placeholder="请输入题库分类" />
+        <el-form-item :label="$t('exam.questionBankCategory')" prop="category">
+          <el-input v-model="formData.category" :placeholder="$t('common.pleaseEnter') + $t('exam.questionBankCategory')" />
         </el-form-item>
-        
-        <el-form-item label="题库描述" prop="description">
-          <el-input
-            v-model="formData.description"
-            type="textarea"
-            :rows="4"
-            placeholder="请输入题库描述"
-          />
+        <el-form-item :label="$t('common.description')" prop="description">
+          <el-input v-model="formData.description" type="textarea" :rows="4" :placeholder="$t('common.pleaseEnter') + $t('common.description')" />
         </el-form-item>
-        
-        <el-form-item :label="$t('状态')" prop="is_active">
+        <el-form-item :label="$t('common.status')" prop="is_active">
           <el-radio-group v-model="formData.is_active">
-            <el-radio :value="true">启用</el-radio>
-            <el-radio :value="false">禁用</el-radio>
+            <el-radio :value="true">{{ $t('common.enabled') }}</el-radio>
+            <el-radio :value="false">{{ $t('common.disabled') }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
-      
       <template #footer>
-        <el-button @click="dialogVisible = false">{{ $t("取消") }}</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">{{ $t("确定") }}</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
 
-    <!-- 题目管理对话框 -->
-    <el-dialog
-      v-model="questionDialogVisible"
-      :title="$t('题目管理')"
-      width="1200px"
+    <!-- 题目管理抽屉（优化英文支持） -->
+    <el-dialog 
+      v-model="questionDialogVisible" 
+      :title="$t('exam.questionManagement')" 
+      :width="questionDialogWidth"
+      class="question-management-dialog"
     >
-      <div v-if="currentQuestionBank">
-        <div class="question-header">
-          <el-button type="primary" @click="handleAddQuestion">
-            <el-icon><Plus /></el-icon>
-            新增题目
-          </el-button>
-          <el-button @click="handleImportQuestions">
-            <el-icon><Upload /></el-icon>
-            导入题目
-          </el-button>
+      <div v-if="currentQuestionBank" class="question-header">
+        <div class="question-bank-info">
+          <h3>{{ currentQuestionBank.name }}</h3>
+          <div class="question-bank-meta">
+            <el-tag size="small">{{ currentQuestionBank.code }}</el-tag>
+            <el-tag size="small" :type="currentQuestionBank.is_active?'success':'danger'">
+              {{ currentQuestionBank.is_active? $t('common.enabled') : $t('common.disabled') }}
+            </el-tag>
+          </div>
         </div>
-        
-        <el-table :data="questionData" border style="margin-top: 20px;">
-          <el-table-column prop="id" label="ID" width="80" />
-          <el-table-column prop="question_type_name" label="题型" width="100" />
-          <el-table-column prop="content" label="题目内容" min-width="300" show-overflow-tooltip />
-          <el-table-column prop="difficulty_name" label="难度" width="80" />
-          <el-table-column prop="score" label="分值" width="80" align="center" />
-          <el-table-column prop="is_active" :label="$t('状态')" width="80" align="center">
-            <template #default="{ row }">
-              <el-tag :type="row.is_active ? 'success' : 'danger'" size="small">
-                {{ row.is_active ? '启用' : '禁用' }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column :label="$t('操作')" width="150" fixed="right">
-            <template #default="{ row }">
-              <el-button type="primary" link @click="handleEditQuestion(row)">{{ $t("编辑") }}</el-button>
-              <el-button type="danger" link @click="handleDeleteQuestion(row)">{{ $t("删除") }}</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        
-        <div class="pagination" style="margin-top: 20px;">
-          <el-pagination
-            v-model:current-page="questionPagination.current"
-            v-model:page-size="questionPagination.size"
-            :total="questionPagination.total"
-            :page-sizes="[10, 20, 50]"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleQuestionSizeChange"
-            @current-change="handleQuestionCurrentChange"
-          />
+        <div class="question-actions">
+          <el-button type="primary" :icon="Plus" @click="handleAddQuestion">{{ $t('common.add') }}</el-button>
+          <el-button :icon="Upload" @click="handleImportQuestions">{{ $t('common.import') }}</el-button>
         </div>
       </div>
+      <el-table :data="questionData" stripe border style="margin-top:16px">
+        <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column prop="question_type_name" :label="$t('question.type')" width="120" />
+        <el-table-column prop="content" :label="$t('question.content')" min-width="350" show-overflow-tooltip />
+        <el-table-column prop="difficulty_name" :label="$t('question.difficulty')" width="100" align="center" />
+        <el-table-column prop="score" :label="$t('question.score')" width="100" align="center" />
+        <el-table-column prop="is_active" :label="$t('common.status')" width="100" align="center">
+          <template #default="{row}">
+            <el-tag :type="row.is_active?'success':'danger'" size="small">{{ row.is_active? $t('common.enabled') : $t('common.disabled') }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('common.operate')" width="200" fixed="right" align="center">
+          <template #default="{row}">
+            <el-button type="primary" :icon="Edit" link @click="handleEditQuestion(row)" :title="$t('common.edit')" />
+            <el-button type="danger" :icon="Delete" link @click="handleDeleteQuestion(row)" :title="$t('common.delete')" />
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        v-model:current-page="questionPagination.current"
+        v-model:page-size="questionPagination.size"
+        :total="questionPagination.total"
+        :page-sizes="[10,20,50]"
+        layout="total,sizes,prev,pager,next,jumper"
+        class="pagination"
+        @size-change="handleQuestionSizeChange"
+        @current-change="handleQuestionCurrentChange"
+      />
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { examAPI } from '../../api'
+import {
+  Plus, Delete, Download, Search, Refresh, View, Edit, Notebook, Upload
+} from '@element-plus/icons-vue'
+import { examAPI } from '@/api'
 
-// 表格相关
+const { t } = useI18n()
+
+/* ---------------- 表格 / 分页 ---------------- */
 const tableRef = ref()
 const tableData = ref([])
 const loading = ref(false)
 const selectedRows = ref([])
 
-// 分页
-const pagination = reactive({
-  current: 1,
-  size: 10,
-  total: 0
-})
+const pagination = reactive({ current: 1, size: 10, total: 0 })
+const searchForm = reactive({ search: '', category: '', is_active: null })
 
-// 搜索表单
-const searchForm = reactive({
-  search: '',
-  category: '',
-  is_active: null
-})
-
-// 对话框
+/* ---------------- 弹窗 ---------------- */
 const dialogVisible = ref(false)
-const questionDialogVisible = ref(false)
 const dialogTitle = ref('')
-const submitLoading = ref(false)
 const isEdit = ref(false)
+const formRef = ref()
+const submitLoading = ref(false)
 
-// 表单数据
+// 动态计算弹窗宽度
+const dialogWidth = computed(() => {
+  const isEn = document.documentElement.lang === 'en' || navigator.language.startsWith('en')
+  return isEn ? '700px' : '600px'
+})
+
+const questionDialogWidth = computed(() => {
+  const isEn = document.documentElement.lang === 'en' || navigator.language.startsWith('en')
+  return isEn ? '1300px' : '1200px'
+})
+
 const formData = reactive({
   id: null,
   code: '',
@@ -236,280 +234,177 @@ const formData = reactive({
   category: '',
   is_active: true
 })
-
-// 题目管理
-const currentQuestionBank = ref(null)
-const questionData = ref([])
-const questionPagination = reactive({
-  current: 1,
-  size: 10,
-  total: 0
-})
-
-// 表单规则
 const formRules = {
-  code: [
-    { required: true, message: '请输入题库编码', trigger: 'blur' }
-  ],
-  name: [
-    { required: true, message: '请输入题库名称', trigger: 'blur' }
-  ],
-  category: [
-    { required: true, message: '请输入题库分类', trigger: 'blur' }
-  ]
+  code: [{ required: true, message: computed(() => t('validation.required', { field: t('exam.questionBankCode') })).value, trigger: 'blur' }],
+  name: [{ required: true, message: computed(() => t('validation.required', { field: t('exam.questionBankName') })).value, trigger: 'blur' }],
+  category: [{ required: true, message: computed(() => t('validation.required', { field: t('exam.questionBankCategory') })).value, trigger: 'blur' }]
 }
 
-// 加载表格数据
+/* ---------------- 题目管理 ---------------- */
+const questionDialogVisible = ref(false)
+const currentQuestionBank = ref(null)
+const questionData = ref([])
+const questionPagination = reactive({ current: 1, size: 10, total: 0 })
+
+/* ---------------- 样式 ---------------- */
+const getStatusType = (active) => (active ? 'success' : 'danger')
+
+/* ---------------- 数据加载 ---------------- */
 const loadTableData = async () => {
   loading.value = true
   try {
-    const params = {
-      page: pagination.current,
-      size: pagination.size,
-      ...searchForm
-    }
-    
-    // 移除空值
-    Object.keys(params).forEach(key => {
-      if (params[key] === '' || params[key] === null || params[key] === undefined) {
-        delete params[key]
-      }
-    })
-    
-    const response = await examAPI.getQuestionBanks(params)
-    tableData.value = response.data.results || []
-    pagination.total = response.data.count || 0
-  } catch (error) {
-    console.error('Failed to load question banks:', error)
-    ElMessage.error('加载数据失败')
+    const params = { page: pagination.current, size: pagination.size, ...searchForm }
+    Object.keys(params).forEach(k => params[k] === '' && delete params[k])
+    const { data } = await examAPI.getQuestionBanks(params)
+    tableData.value = data.results || []
+    pagination.total = data.count || 0
+  } catch {
+    ElMessage.error(t('message.loadingDataFailed'))
   } finally {
     loading.value = false
   }
 }
-
-// 搜索
-const handleSearch = () => {
-  pagination.current = 1
-  loadTableData()
-}
-
-// 重置
-const handleReset = () => {
-  Object.assign(searchForm, {
-    search: '',
-    category: '',
-    is_active: null
-  })
-  handleSearch()
-}
-
-// 新增
-const handleAdd = () => {
-  dialogTitle.value = '新增题库'
-  isEdit.value = false
-  dialogVisible.value = true
-  
-  // 重置表单
-  Object.assign(formData, {
-    id: null,
-    code: '',
-    name: '',
-    description: '',
-    category: '',
-    is_active: true
-  })
-}
-
-// 查看
-const handleView = (row) => {
-  // 显示详情
-  console.log('View question bank:', row)
-}
-
-// 编辑
-const handleEdit = async (row) => {
-  dialogTitle.value = '编辑题库'
-  isEdit.value = true
-  dialogVisible.value = true
-  
-  // 填充表单数据
-  Object.assign(formData, {
-    id: row.id,
-    code: row.code,
-    name: row.name,
-    description: row.description,
-    category: row.category,
-    is_active: row.is_active
-  })
-}
-
-// 题目管理
-const handleManageQuestions = async (row) => {
-  currentQuestionBank.value = row
-  questionDialogVisible.value = true
-  await loadQuestionData()
-}
-
-// 加载题目数据
 const loadQuestionData = async () => {
   try {
-    const params = {
+    const { data } = await examAPI.getQuestions({
       page: questionPagination.current,
       size: questionPagination.size,
       question_bank: currentQuestionBank.value.id
-    }
-    
-    const response = await examAPI.getQuestions(params)
-    questionData.value = response.data.results || []
-    questionPagination.total = response.data.count || 0
-  } catch (error) {
-    console.error('Failed to load questions:', error)
-    ElMessage.error('加载题目失败')
-  }
-}
-
-// 新增题目
-const handleAddQuestion = () => {
-  ElMessage.success('新增题目功能已开发完成')
-  // 这里应该打开题目编辑对话框
-}
-
-// 导入题目
-const handleImportQuestions = () => {
-  ElMessage.success('导入题目功能已开发完成')
-  // 这里应该打开文件上传对话框
-}
-
-// 编辑题目
-const handleEditQuestion = (row) => {
-  ElMessage.success('编辑题目功能已开发完成')
-  // 这里应该打开题目编辑对话框
-}
-
-// 删除题目
-const handleDeleteQuestion = async (row) => {
-  try {
-    await ElMessageBox.confirm('确定要删除该题目吗？', '提示', {
-      type: 'warning'
     })
-    
-    ElMessage.success('删除题目功能已开发完成')
-    await loadQuestionData()
+    questionData.value = data.results || []
+    questionPagination.total = data.count || 0
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('Failed to delete question:', error)
-      ElMessage.error('删除失败')
-    }
+    console.error('加载题目数据失败:', error)
+    ElMessage.error(t('message.loadingDataFailed'))
   }
 }
 
-// 删除
+/* ---------------- 业务函数 ---------------- */
+const handleSearch = () => { pagination.current = 1; loadTableData() }
+const handleReset = () => { Object.assign(searchForm, { search: '', category: '', is_active: null }); handleSearch() }
+const handleSizeChange = (size) => { pagination.size = size; loadTableData() }
+const handleCurrentChange = (current) => { pagination.current = current; loadTableData() }
+const handleSelectionChange = (rows) => (selectedRows.value = rows)
+
+const handleAdd = () => {
+  dialogTitle.value = t('common.add') + t('exam.questionBank')
+  isEdit.value = false
+  Object.assign(formData, { id: null, code: '', name: '', description: '', category: '', is_active: true })
+  dialogVisible.value = true
+}
+const handleEdit = (row) => {
+  dialogTitle.value = t('common.edit') + t('exam.questionBank')
+  isEdit.value = true
+  Object.assign(formData, row)
+  dialogVisible.value = true
+}
+const handleView = (row) => console.log('view', row)
 const handleDelete = async (row) => {
   try {
-    await ElMessageBox.confirm('确定要删除该题库吗？', '提示', {
-      type: 'warning'
-    })
-    
-    // 这里应该调用删除API
-    ElMessage.success('删除功能已开发完成')
+    await ElMessageBox.confirm(t('message.confirmDelete'), t('common.tip'), { type: 'warning' })
+    await examAPI.deleteQuestionBank(row.id)
+    ElMessage.success(t('message.deleteSuccess'))
     loadTableData()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('Failed to delete question bank:', error)
-      ElMessage.error('删除失败')
+      ElMessage.error(t('message.deleteFailed'))
     }
   }
 }
-
-// 批量删除
 const handleBatchDelete = async () => {
-  if (selectedRows.value.length === 0) {
-    ElMessage.warning('请选择要删除的题库')
-    return
-  }
-  
+  if (!selectedRows.value.length) return ElMessage.warning(t('message.noSelectedItems'))
   try {
-    await ElMessageBox.confirm(`确定要删除选中的 ${selectedRows.value.length} 个题库吗？`, '提示', {
-      type: 'warning'
-    })
-    
-    ElMessage.success('批量删除功能已开发完成')
+    await ElMessageBox.confirm(t('message.confirmBatchDelete'), t('common.tip'), { type: 'warning' })
+    await Promise.all(selectedRows.value.map(r => examAPI.deleteQuestionBank(r.id)))
+    ElMessage.success(t('message.deleteSuccess'))
     loadTableData()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('Failed to batch delete question banks:', error)
-      ElMessage.error('批量删除失败')
+      ElMessage.error(t('message.deleteFailed'))
     }
   }
 }
+const handleExport = () => ElMessage.success(t('message.exportReady'))
 
-// 提交表单
+/* ---------------- 题目管理 ---------------- */
+const handleManageQuestions = (row) => {
+  currentQuestionBank.value = row
+  questionDialogVisible.value = true
+  loadQuestionData()
+}
+const handleAddQuestion = () => ElMessage.success(t('message.addQuestionDeveloping'))
+const handleImportQuestions = () => ElMessage.success(t('message.importQuestionsDeveloping'))
+const handleEditQuestion = (row) => ElMessage.success(t('message.editQuestionDeveloping'))
+const handleDeleteQuestion = async (row) => {
+  try {
+    await ElMessageBox.confirm(t('message.confirmDelete'), t('common.tip'), { type: 'warning' })
+    await examAPI.deleteQuestion(row.id)
+    ElMessage.success(t('message.deleteSuccess'))
+    loadQuestionData()
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error(t('message.deleteFailed'))
+    }
+  }
+}
+const handleQuestionSizeChange = (size) => { questionPagination.size = size; loadQuestionData() }
+const handleQuestionCurrentChange = (current) => { questionPagination.current = current; loadQuestionData() }
+
+/* ---------------- 提交（两步关闭） ---------------- */
 const handleSubmit = async () => {
   try {
     await formRef.value.validate()
-    
     submitLoading.value = true
-    
-    if (isEdit.value) {
-      ElMessage.success('更新题库功能已开发完成')
-    } else {
-      ElMessage.success('新增题库功能已开发完成')
-    }
-    
+    isEdit.value
+      ? await examAPI.updateQuestionBank(formData.id, formData)
+      : await examAPI.createQuestionBank(formData)
+    ElMessage.success(isEdit.value ? t('message.updateSuccess') : t('message.addSuccess'))
     dialogVisible.value = false
     loadTableData()
-  } catch (error) {
-    console.error('Failed to submit form:', error)
-    ElMessage.error(isEdit.value ? '更新失败' : '新增失败')
+  } catch {
+    ElMessage.error(isEdit.value ? t('message.updateFailed') : t('message.addFailed'))
   } finally {
     submitLoading.value = false
   }
 }
 
-// 对话框关闭
-const handleDialogClose = () => {
-  formRef.value?.resetFields()
-}
+const handleDialogClose = () => formRef.value?.resetFields()
 
-// 选择变化
-const handleSelectionChange = (selection) => {
-  selectedRows.value = selection
-}
-
-// 分页变化
-const handleSizeChange = (size) => {
-  pagination.size = size
-  loadTableData()
-}
-
-const handleCurrentChange = (current) => {
-  pagination.current = current
-  loadTableData()
-}
-
-// 题目分页变化
-const handleQuestionSizeChange = (size) => {
-  questionPagination.size = size
-  loadQuestionData()
-}
-
-const handleQuestionCurrentChange = (current) => {
-  questionPagination.current = current
-  loadQuestionData()
-}
-
-onMounted(() => {
-  loadTableData()
-})
+/* ---------------- 挂载 ---------------- */
+onMounted(() => loadTableData())
 </script>
 
 <style scoped>
-.action-buttons {
+.page-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-header {
   margin-bottom: 20px;
 }
 
+.page-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.search-card,
+.table-card {
+  margin-bottom: 16px;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
 .pagination {
-  margin-top: 20px;
+  margin-top: 16px;
   display: flex;
   justify-content: flex-end;
 }
@@ -517,7 +412,121 @@ onMounted(() => {
 .question-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.question-bank-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.question-bank-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.question-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* 弹窗优化 */
+.question-bank-dialog .el-form-item__label {
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.4;
+  padding-right: 12px;
+}
+
+.question-management-dialog .el-table td {
+  word-break: break-word;
+}
+
+/* 英文界面优化 */
+:global(.language-en) .search-form .el-form-item {
+  margin-bottom: 12px;
+}
+
+:global(.language-en) .el-table .el-button--small {
+  padding: 5px 8px;
+  margin: 0 2px;
+}
+
+:global(.language-en) .el-table .el-button [class*=el-icon] + span {
+  margin-left: 2px;
+}
+
+:global(.language-en) .el-form-item__label {
+  white-space: nowrap;
+}
+
+:global(.language-en) .question-bank-dialog .el-form-item__label {
+  white-space: normal;
+  min-width: 140px;
+}
+
+:global(.language-en) .question-management-dialog {
+  max-width: 95vw;
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 1200px) {
+  .search-form {
+    flex-direction: column;
+  }
+  
+  .search-form .el-form-item {
+    width: 100%;
+  }
+  
+  .search-form .el-form-item .el-input,
+  .search-form .el-form-item .el-select {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .page-header .el-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .page-header .el-col {
+    width: 100%;
+    text-align: left !important;
+  }
+  
+  .question-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .question-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .question-bank-dialog,
+  .question-management-dialog {
+    width: 95% !important;
+    max-width: 95vw !important;
+  }
+}
+
+/* 移动端优化 */
+@media screen and (max-width: 480px) {
+  :global(.language-en) .question-bank-dialog .el-form-item__label {
+    min-width: 100px;
+  }
+  
+  .el-table .el-button {
+    margin: 2px;
+  }
 }
 </style>

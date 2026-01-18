@@ -1,5 +1,5 @@
 <template>
-  <div class="assessments">
+  <div class="page-container">
     <!-- 页面头部 -->
     <div class="page-header">
       <el-row :gutter="20" align="middle">
@@ -8,7 +8,7 @@
         </el-col>
         <el-col :span="12" class="text-right">
           <el-button type="primary" :icon="Plus" @click="handleAdd">
-            {{ $t('common.add') }}
+            {{ $t('common.add') + $t('competency.assessment') }}
           </el-button>
           <el-button :icon="Download" @click="handleExport">
             {{ $t('common.export') }}
@@ -23,7 +23,7 @@
         <el-form-item :label="$t('user.realName')">
           <el-input
             v-model="searchForm.employeeName"
-            :placeholder="$t('common.pleaseEnter')"
+            :placeholder="$t('common.pleaseEnter') + $t('user.realName')"
             clearable
             style="width: 150px"
           />
@@ -31,7 +31,7 @@
         <el-form-item :label="$t('department.departmentName')">
           <el-input
             v-model="searchForm.department"
-            :placeholder="$t('common.pleaseEnter')"
+            :placeholder="$t('common.pleaseEnter') + $t('department.departmentName')"
             clearable
             style="width: 150px"
           />
@@ -39,7 +39,7 @@
         <el-form-item :label="$t('competency.competencyName')">
           <el-input
             v-model="searchForm.competencyName"
-            :placeholder="$t('common.pleaseEnter')"
+            :placeholder="$t('common.pleaseEnter') + $t('competency.competencyName')"
             clearable
             style="width: 150px"
           />
@@ -51,10 +51,10 @@
             clearable
             style="width: 150px"
           >
-            <el-option :label="$t('笔试')" value="written_exam" />
-            <el-option :label="$t('实操考核')" value="practical_exam" />
-            <el-option :label="$t('面试评估')" value="interview" />
-            <el-option :label="$t('项目评估')" value="project_evaluation" />
+            <el-option :label="$t('competency.writtenExam')" value="written_exam" />
+            <el-option :label="$t('competency.practicalExam')" value="practical_exam" />
+            <el-option :label="$t('competency.interview')" value="interview" />
+            <el-option :label="$t('competency.projectEvaluation')" value="project_evaluation" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('common.status')">
@@ -64,8 +64,8 @@
             clearable
             style="width: 120px"
           >
-            <el-option :label="$t('common.pending')" value="pending" />
-            <el-option :label="$t('common.inProgress')" value="in_progress" />
+            <el-option :label="$t('assessment.pending')" value="pending" />
+            <el-option :label="$t('assessment.inProgress')" value="in_progress" />
             <el-option :label="$t('common.completed')" value="completed" />
           </el-select>
         </el-form-item>
@@ -147,19 +147,19 @@
         />
         <el-table-column
           prop="scheduledDate"
-          :label="$t('common.scheduledDate')"
+          :label="$t('assessment.scheduledDate')"
           width="150"
           align="center"
         />
         <el-table-column
           prop="actualDate"
-          :label="$t('common.actualDate')"
+          :label="$t('assessment.actualDate')"
           width="150"
           align="center"
         />
         <el-table-column
           prop="score"
-          :label="$t('common.score')"
+          :label="$t('assessment.score')"
           width="100"
           align="center"
         >
@@ -210,6 +210,7 @@
               circle
               size="small"
               @click="handleAssess(scope.row)"
+              :title="$t('competency.assessment')"
             />
             <el-button
               v-else
@@ -218,6 +219,7 @@
               circle
               size="small"
               @click="handleView(scope.row)"
+              :title="$t('common.view')"
             />
             <el-button
               type="warning"
@@ -225,6 +227,7 @@
               circle
               size="small"
               @click="handleEdit(scope.row)"
+              :title="$t('common.edit')"
             />
             <el-button
               type="danger"
@@ -232,6 +235,7 @@
               circle
               size="small"
               @click="handleDelete(scope.row)"
+              :title="$t('common.delete')"
             />
           </template>
         </el-table-column>
@@ -272,7 +276,7 @@
         <el-form-item :label="$t('competency.assessmentMethod')">
           <el-input v-model="assessFormData.assessmentMethod" readonly />
         </el-form-item>
-        <el-form-item :label="$t('common.actualDate')" prop="actualDate">
+        <el-form-item :label="$t('assessment.actualDate')" prop="actualDate">
           <el-date-picker
             v-model="assessFormData.actualDate"
             type="date"
@@ -280,7 +284,7 @@
             style="width: 100%"
           />
         </el-form-item>
-        <el-form-item :label="$t('common.score')" prop="score">
+        <el-form-item :label="$t('assessment.score')" prop="score">
           <el-input-number
             v-model="assessFormData.score"
             :min="0"
@@ -300,12 +304,12 @@
             <el-option :label="$t('competency.expert')" value="expert" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('common.comment')" prop="comment">
+        <el-form-item :label="$t('assessment.comment')" prop="comment">
           <el-input
             v-model="assessFormData.comment"
             type="textarea"
             :rows="3"
-            :placeholder="$t('common.pleaseEnter')"
+            :placeholder="$t('common.pleaseEnter') + $t('assessment.comment')"
           />
         </el-form-item>
       </el-form>
@@ -322,7 +326,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
   Plus, 
@@ -334,6 +339,8 @@ import {
   Download
 } from '@element-plus/icons-vue'
 import { competencyAPI } from '../../api'
+
+const { t } = useI18n()
 
 // 响应式数据
 const loading = ref(false)
@@ -377,14 +384,14 @@ const assessFormData = reactive({
 // 评估表单验证规则
 const assessFormRules = reactive({
   actualDate: [
-    { required: true, message: '请选择实际评估日期', trigger: 'change' }
+    { required: true, message: computed(() => t('validation.required', { field: t('assessment.actualDate') })).value, trigger: 'change' }
   ],
   score: [
-    { required: true, message: '请输入评估分数', trigger: 'blur' },
-    { type: 'number', min: 0, max: 100, message: '分数必须在0-100之间', trigger: 'blur' }
+    { required: true, message: computed(() => t('validation.required', { field: t('assessment.score') })).value, trigger: 'blur' },
+    { type: 'number', min: 0, max: 100, message: t('validation.scoreRange'), trigger: 'blur' }
   ],
   level: [
-    { required: true, message: '请选择能力级别', trigger: 'change' }
+    { required: true, message: computed(() => t('validation.required', { field: t('competency.competencyLevel') })).value, trigger: 'change' }
   ]
 })
 
@@ -401,7 +408,7 @@ const loadData = async () => {
     tableData.value = response.data.results || []
     pagination.total = response.data.count || 0
   } catch (error) {
-    ElMessage.error('加载数据失败')
+    ElMessage.error(t('message.loadingDataFailed'))
     console.error('加载评估数据失败:', error)
   } finally {
     loading.value = false
@@ -439,28 +446,28 @@ const handleSelectionChange = (val) => {
 }
 
 const handleAdd = () => {
-  ElMessage.info('新增功能开发中...')
+  ElMessage.info(t('message.addDeveloping'))
 }
 
 const handleView = (row) => {
   // 查看详情
-  ElMessage.info('查看功能开发中...')
+  ElMessage.info(t('message.viewDeveloping'))
 }
 
 const handleEdit = (row) => {
-  ElMessage.info('编辑功能开发中...')
+  ElMessage.info(t('message.editDeveloping'))
 }
 
 const handleDelete = async (row) => {
   try {
-    await ElMessageBox.confirm('确定要删除该评估记录吗？', '提示', {
+    await ElMessageBox.confirm(t('message.confirmDelete'), t('common.tip'), {
       type: 'warning'
     })
-    ElMessage.success('删除成功')
+    ElMessage.success(t('message.deleteSuccess'))
     loadData()
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('删除失败')
+      ElMessage.error(t('message.deleteFailed'))
     }
   }
 }
@@ -481,12 +488,12 @@ const handleAssessSubmit = async () => {
     // 模拟提交评估结果
     await new Promise(resolve => setTimeout(resolve, 1000))
     
-    ElMessage.success('评估完成')
+    ElMessage.success(t('message.assessSuccess'))
     assessDialogVisible.value = false
     loadData()
   } catch (error) {
     if (error !== false) {
-      ElMessage.error('评估失败')
+      ElMessage.error(t('message.assessFailed'))
       console.error('提交评估失败:', error)
     }
   } finally {
@@ -510,16 +517,16 @@ const handleAssessDialogClose = () => {
 }
 
 const handleExport = () => {
-  ElMessage.info('导出功能开发中...')
+  ElMessage.info(t('message.exportDeveloping'))
 }
 
 // 辅助方法
 const getMethodLabel = (method) => {
   const labels = {
-    written_exam: '笔试',
-    practical_exam: '实操考核',
-    interview: '面试评估',
-    project_evaluation: '项目评估'
+    written_exam: t('competency.writtenExam'),
+    practical_exam: t('competency.practicalExam'),
+    interview: t('competency.interview'),
+    project_evaluation: t('competency.projectEvaluation')
   }
   return labels[method] || method
 }
@@ -536,9 +543,9 @@ const getMethodTagType = (method) => {
 
 const getStatusLabel = (status) => {
   const labels = {
-    pending: '待评估',
-    in_progress: '评估中',
-    completed: '已完成'
+    pending: t('assessment.pending'),
+    in_progress: t('assessment.inProgress'),
+    completed: t('common.completed')
   }
   return labels[status] || status
 }
@@ -609,7 +616,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.assessments {
+.page-container {
   padding: 20px;
 }
 
@@ -641,6 +648,24 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
+/* 英文界面优化 */
+:global(.language-en) .search-form {
+  gap: 12px;
+}
+
+:global(.language-en) .search-form .el-form-item {
+  margin-bottom: 12px;
+}
+
+:global(.language-en) .el-table .el-button--small {
+  padding: 5px;
+  margin: 0 2px;
+}
+
+:global(.language-en) .el-form-item__label {
+  white-space: nowrap;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .search-form {
@@ -650,10 +675,26 @@ onMounted(() => {
   .search-form .el-form-item {
     margin-right: 0;
     margin-bottom: 10px;
+    width: 100%;
+  }
+  
+  .search-form .el-form-item .el-input,
+  .search-form .el-form-item .el-select {
+    width: 100% !important;
   }
   
   .pagination {
     justify-content: center;
+  }
+  
+  .page-header .el-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .page-header .el-col {
+    width: 100%;
+    text-align: left !important;
   }
 }
 </style>

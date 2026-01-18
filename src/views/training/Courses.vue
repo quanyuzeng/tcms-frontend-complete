@@ -91,70 +91,70 @@
       <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item :label="$t('课程编码')" prop="code">
-              <el-input v-model="formData.code" placeholder="请输入课程编码" />
+            <el-form-item :label="$t('course.courseCode')" prop="code">
+              <el-input v-model="formData.code" :placeholder="$t('common.pleaseEnter') + $t('course.courseCode')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="$t('课程名称')" prop="title">
-              <el-input v-model="formData.title" placeholder="请输入课程名称" />
+            <el-form-item :label="$t('course.courseName')" prop="title">
+              <el-input v-model="formData.title" :placeholder="$t('common.pleaseEnter') + $t('course.courseName')" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="课程分类" prop="category">
+            <el-form-item :label="$t('course.category')" prop="category">
               <el-cascader v-model="formData.category" :options="categoryOptions" :props="{ checkStrictly: true }"
-                placeholder="请选择课程分类" style="width:100%" />
+                :placeholder="$t('common.pleaseSelect') + $t('course.category')" style="width:100%" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="$t('课程类型')" prop="course_type">
-              <el-select v-model="formData.course_type" placeholder="请选择课程类型" style="width:100%">
-                <el-option :label="$t('在线课程')" value="online" />
-                <el-option :label="$t('线下培训')" value="offline" />
-                <el-option :label="$t('混合式')" value="mixed" />
+            <el-form-item :label="$t('course.courseType')" prop="course_type">
+              <el-select v-model="formData.course_type" :placeholder="$t('common.pleaseSelect') + $t('course.courseType')" style="width:100%">
+                <el-option :label="$t('course.online')" value="online" />
+                <el-option :label="$t('course.offline')" value="offline" />
+                <el-option :label="$t('course.mixed')" value="mixed" />
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-form-item label="课程时长" prop="duration">
+            <el-form-item :label="$t('course.duration')" prop="duration">
               <el-input-number v-model="formData.duration" :min="1" :precision="0" style="width:100%">
-                <template #append>分钟</template>
+                <template #append>{{ $t('common.minutes') }}</template>
               </el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item :label="$t('学分')" prop="credit">
+            <el-form-item :label="$t('course.credit')" prop="credit">
               <el-input-number v-model="formData.credit" :min="0" :precision="1" style="width:100%" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="及格分数" prop="passing_score">
+            <el-form-item :label="$t('course.passingScore')" prop="passing_score">
               <el-input-number v-model="formData.passing_score" :min="0" :max="100" :precision="1" style="width:100%">
                 <template #append>分</template>
               </el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item :label="$t('课程描述')" prop="description">
-          <el-input v-model="formData.description" type="textarea" :rows="4" placeholder="请输入课程描述" />
+        <el-form-item :label="$t('common.description')" prop="description">
+          <el-input v-model="formData.description" type="textarea" :rows="4" :placeholder="$t('common.pleaseEnter') + $t('common.description')" />
         </el-form-item>
-        <el-form-item label="目标岗位" prop="target_positions">
-          <el-select v-model="formData.target_positions" multiple filterable placeholder="请选择目标岗位" style="width:100%">
+        <el-form-item :label="$t('training.targetPosition')" prop="target_positions">
+          <el-select v-model="formData.target_positions" multiple filterable :placeholder="$t('common.pleaseSelect') + $t('training.targetPosition')" style="width:100%">
             <el-option v-for="pos in positionOptions" :key="pos.id" :label="pos.name" :value="pos.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="标签" prop="tags">
-          <el-input v-model="formData.tags" placeholder="请输入标签，用逗号分隔" />
+        <el-form-item :label="$t('course.tags')" prop="tags">
+          <el-input v-model="formData.tags" :placeholder="$t('course.enterTagsPlaceholder')" />
         </el-form-item>
-        <el-form-item :label="$t('状态')" prop="status">
+        <el-form-item :label="$t('common.status')" prop="status">
           <el-radio-group v-model="formData.status">
-            <el-radio label="draft">草稿</el-radio>
-            <el-radio label="published">已发布</el-radio>
-            <el-radio label="archived">已归档</el-radio>
+            <el-radio label="draft">{{ $t('course.draft') }}</el-radio>
+            <el-radio label="published">{{ $t('course.published') }}</el-radio>
+            <el-radio label="archived">{{ $t('course.archived') }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -167,11 +167,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Delete, Upload, Download, Notebook } from '@element-plus/icons-vue'
-import { courseAPI } from '@/api/training'        // ✅ 正确路径
+import { courseAPI } from '@/api/training'
 import { positionAPI } from '@/api/position'
+
+const { t } = useI18n()
 
 /* -------- 弹窗状态 -------- */
 const dialogVisible = ref(false)
@@ -197,14 +200,42 @@ const formData = reactive({
 })
 
 const formRules = {
-  code: [{ required: true, message: '请输入课程编码', trigger: 'blur' }],
-  title: [{ required: true, message: '请输入课程名称', trigger: 'blur' }],
-  category: [{ required: true, message: '请选择课程分类', trigger: 'change' }],
-  course_type: [{ required: true, message: '请选择课程类型', trigger: 'change' }]
+  code: [{ 
+    required: true, 
+    message: computed(() => t('validation.required', { field: t('course.courseCode') })).value, 
+    trigger: 'blur' 
+  }],
+  title: [{ 
+    required: true, 
+    message: computed(() => t('validation.required', { field: t('course.courseName') })).value, 
+    trigger: 'blur' 
+  }],
+  category: [{ 
+    required: true, 
+    message: computed(() => t('validation.required', { field: t('course.category') })).value, 
+    trigger: 'change' 
+  }],
+  course_type: [{ 
+    required: true, 
+    message: computed(() => t('validation.required', { field: t('course.courseType') })).value, 
+    trigger: 'change' 
+  }]
 }
 
+/* -------- 计算属性 -------- */
+const addButtonText = computed(() => {
+  return t('common.add') + t('course.course')
+})
+
+const editButtonText = computed(() => {
+  return t('common.edit') + t('course.course')
+})
+
 /* -------- 两步关闭 -------- */
-const handleDialogClose = () => { dialogVisible.value = false }
+const handleDialogClose = () => { 
+  dialogVisible.value = false 
+}
+
 watch(dialogVisible, val => {
   if (!val) {
     formRef.value?.resetFields()
@@ -219,12 +250,13 @@ watch(dialogVisible, val => {
 
 /* -------- 打开弹窗 -------- */
 const handleAdd = () => {
-  dialogTitle.value = '新增课程'
+  dialogTitle.value = addButtonText.value
   isEdit.value = false
   dialogVisible.value = true
 }
+
 const handleEdit = row => {
-  dialogTitle.value = '编辑课程'
+  dialogTitle.value = editButtonText.value
   isEdit.value = true
   Object.assign(formData, {
     id: row.id, code: row.code, title: row.title, description: row.description,
@@ -240,14 +272,20 @@ const handleSubmit = async () => {
   try {
     await formRef.value.validate()
     submitLoading.value = true
-    isEdit.value
-      ? await courseAPI.updateCourse(formData.id, formData)
-      : await courseAPI.createCourse(formData)
-    ElMessage.success(isEdit.value ? '更新成功' : '新增成功')
+    
+    if (isEdit.value) {
+      await courseAPI.updateCourse(formData.id, formData)
+      ElMessage.success(t('message.operationSuccess'))
+    } else {
+      await courseAPI.createCourse(formData)
+      ElMessage.success(t('message.operationSuccess'))
+    }
+    
     handleDialogClose()
     loadTableData()
-  } catch {
-    ElMessage.error(isEdit.value ? '更新失败' : '新增失败')
+  } catch (error) {
+    console.error('保存失败:', error)
+    ElMessage.error(t('message.operationFailed'))
   } finally {
     submitLoading.value = false
   }
@@ -257,44 +295,150 @@ const handleSubmit = async () => {
 const loadTableData = async () => {
   loading.value = true
   try {
-    const params = { page: pagination.current, size: pagination.size, ...searchForm }
-    Object.keys(params).forEach(k => params[k] === '' && delete params[k])
+    const params = { 
+      page: pagination.current, 
+      size: pagination.size, 
+      ...searchForm 
+    }
+    
+    // 移除空参数
+    Object.keys(params).forEach(k => {
+      if (params[k] === '' || params[k] === null || params[k] === undefined) {
+        delete params[k]
+      }
+    })
+    
     const { data } = await courseAPI.getCourses(params)
     tableData.value = data.results || []
     pagination.total = data.count || 0
-  } catch {
-    ElMessage.error('加载数据失败')
+  } catch (error) {
+    console.error('加载数据失败:', error)
+    ElMessage.error(t('message.loadingDataFailed'))
   } finally {
     loading.value = false
   }
 }
-const handleSearch = () => { pagination.current = 1; loadTableData() }
-const handleReset = () => { Object.assign(searchForm, { search: '', category: '', status: '' }); handleSearch() }
-const handleSizeChange = size => { pagination.size = size; loadTableData() }
-const handleCurrentChange = current => { pagination.current = current; loadTableData() }
-const handleSelectionChange = rows => (selectedRows.value = rows)
-const handleDelete = async (row) => {
-  await ElMessageBox.confirm('确定删除该课程吗？', '提示', { type: 'warning' })
-  await courseAPI.deleteCourse(row.id)
-  ElMessage.success('删除成功')
-  loadTableData()
+
+const handleSearch = () => { 
+  pagination.current = 1
+  loadTableData() 
 }
-const handleView = row => console.log('view', row)
-const handleMaterials = row => console.log('materials', row)
-const handleImport = () => ElMessage.info('导入开发中')
-const handleExport = () => ElMessage.success('导出功能已开发完成')
-const getStatusType = status => ({ draft: 'info', published: 'success', archived: 'warning' }[status] || 'info')
+
+const handleReset = () => { 
+  Object.assign(searchForm, { search: '', category: '', status: '' })
+  handleSearch() 
+}
+
+const handleSizeChange = size => { 
+  pagination.size = size
+  loadTableData() 
+}
+
+const handleCurrentChange = current => { 
+  pagination.current = current
+  loadTableData() 
+}
+
+const handleSelectionChange = rows => { 
+  selectedRows.value = rows 
+}
+
+const handleDelete = async (row) => {
+  try {
+    await ElMessageBox.confirm(
+      t('message.confirmDelete'), 
+      t('common.tip'), 
+      { type: 'warning' }
+    )
+    
+    await courseAPI.deleteCourse(row.id)
+    ElMessage.success(t('message.deleteSuccess'))
+    loadTableData()
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('删除失败:', error)
+      ElMessage.error(t('message.deleteFailed'))
+    }
+  }
+}
+
+const handleBatchDelete = async () => {
+  if (selectedRows.value.length === 0) {
+    ElMessage.warning(t('message.noSelectedItems'))
+    return
+  }
+  
+  try {
+    await ElMessageBox.confirm(
+      t('message.confirmBatchDelete'), 
+      t('common.tip'), 
+      { type: 'warning' }
+    )
+    
+    const ids = selectedRows.value.map(row => row.id)
+    await courseAPI.batchDeleteCourses(ids)
+    ElMessage.success(t('message.deleteSuccess'))
+    loadTableData()
+    selectedRows.value = []
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('批量删除失败:', error)
+      ElMessage.error(t('message.deleteFailed'))
+    }
+  }
+}
+
+const handleView = row => {
+  console.log('查看课程:', row)
+  // 这里可以添加查看课程详情的逻辑
+}
+
+const handleMaterials = row => {
+  console.log('课程资料:', row)
+  // 这里可以添加管理课程资料的逻辑
+}
+
+const handleImport = () => {
+  ElMessage.info(t('message.importDeveloping'))
+}
+
+const handleExport = () => {
+  ElMessage.success(t('message.exportReady'))
+}
+
+const getStatusType = status => {
+  const typeMap = {
+    draft: 'info',
+    published: 'success',
+    archived: 'warning',
+    inProgress: 'primary',
+    completed: 'success'
+  }
+  return typeMap[status] || 'info'
+}
 
 /* -------- 下拉数据 -------- */
 const categoryOptions = ref([])
 const positionOptions = ref([])
+
 const loadCategoryOptions = async () => {
-  const { data } = await courseAPI.getCategoryTree()
-  categoryOptions.value = data || []
+  try {
+    const { data } = await courseAPI.getCategoryTree()
+    categoryOptions.value = data || []
+  } catch (error) {
+    console.error('加载分类选项失败:', error)
+    ElMessage.error(t('message.loadDataFailed'))
+  }
 }
+
 const loadPositionOptions = async () => {
-  const { data } = await positionAPI.getPositions({ size: 1000 })
-  positionOptions.value = data.results || []
+  try {
+    const { data } = await positionAPI.getPositions({ size: 1000 })
+    positionOptions.value = data.results || []
+  } catch (error) {
+    console.error('加载岗位选项失败:', error)
+    ElMessage.error(t('message.loadDataFailed'))
+  }
 }
 
 onMounted(() => {
@@ -305,6 +449,60 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.action-buttons { margin-bottom: 20px; }
-.pagination { margin-top: 20px; display: flex; justify-content: flex-end; }
+.page-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-header {
+  margin-bottom: 20px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.page-content {
+  flex: 1;
+  background: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.search-form {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.action-buttons {
+  margin-bottom: 20px;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.el-table {
+  margin-top: 10px;
+}
+
+.el-form-item {
+  margin-bottom: 18px;
+}
+
+.el-dialog .el-form-item:last-child {
+  margin-bottom: 0;
+}
+
+.el-button + .el-button {
+  margin-left: 10px;
+}
 </style>

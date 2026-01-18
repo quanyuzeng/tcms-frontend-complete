@@ -360,6 +360,10 @@ onUnmounted(() => {
   margin-top: 10px;
   font-size: 14px;
   color: #606266;
+  word-break: break-word; /* 允许单词换行 */
+  text-align: center;     /* 文本居中 */
+  white-space: normal;    /* 允许换行 */
+  width: 100%;            /* 确保宽度占满 */
 }
 
 .todo-list {

@@ -214,18 +214,24 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="700px"
+      width="800px"
       @close="handleDialogClose"
+      class="position-dialog"
     >
       <el-form
         ref="formRef"
         :model="formData"
         :rules="formRules"
-        label-width="140px"
+        label-width="auto"
+        class="position-form"
       >
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item :label="$t('position.positionName')" prop="name">
+            <el-form-item 
+              :label="$t('position.positionName')" 
+              prop="name"
+              class="form-label-ellipsis"
+            >
               <el-input
                 v-model="formData.name"
                 :placeholder="$t('common.pleaseEnter')"
@@ -233,7 +239,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="$t('common.code')" prop="code">
+            <el-form-item 
+              :label="$t('common.code')" 
+              prop="code"
+              class="form-label-ellipsis"
+            >
               <el-input
                 v-model="formData.code"
                 :placeholder="$t('common.pleaseEnter')"
@@ -244,7 +254,11 @@
         
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item :label="$t('position.positionLevel')" prop="level">
+            <el-form-item 
+              :label="$t('position.positionLevel')" 
+              prop="level"
+              class="form-label-ellipsis"
+            >
               <el-select
                 v-model="formData.level"
                 :placeholder="$t('common.pleaseSelect')"
@@ -258,7 +272,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="$t('department.departmentName')" prop="department">
+            <el-form-item 
+              :label="$t('department.departmentName')" 
+              prop="department"
+              class="form-label-ellipsis"
+            >
               <el-input
                 v-model="formData.department"
                 :placeholder="$t('common.pleaseEnter')"
@@ -269,7 +287,11 @@
         
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item :label="$t('position.requiredTrainingHours')" prop="requiredTrainingHours">
+            <el-form-item 
+              :label="$t('position.requiredTrainingHours')" 
+              prop="requiredTrainingHours"
+              class="form-label-ellipsis"
+            >
               <el-input-number
                 v-model="formData.requiredTrainingHours"
                 :min="0"
@@ -278,7 +300,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="$t('position.minExperience')" prop="minExperience">
+            <el-form-item 
+              :label="$t('position.minExperience')" 
+              prop="minExperience"
+              class="form-label-ellipsis"
+            >
               <el-input-number
                 v-model="formData.minExperience"
                 :min="0"
@@ -288,7 +314,11 @@
           </el-col>
         </el-row>
         
-        <el-form-item :label="$t('position.minEducation')" prop="minEducation">
+        <el-form-item 
+          :label="$t('position.minEducation')" 
+          prop="minEducation"
+          class="form-label-ellipsis"
+        >
           <el-select
             v-model="formData.minEducation"
             :placeholder="$t('common.pleaseSelect')"
@@ -303,7 +333,11 @@
           </el-select>
         </el-form-item>
         
-        <el-form-item :label="$t('position.responsibilities')" prop="responsibilities">
+        <el-form-item 
+          :label="$t('position.responsibilities')" 
+          prop="responsibilities"
+          class="form-label-ellipsis"
+        >
           <el-input
             v-model="formData.responsibilities"
             type="textarea"
@@ -312,7 +346,11 @@
           />
         </el-form-item>
         
-        <el-form-item :label="$t('position.qualifications')" prop="qualifications">
+        <el-form-item 
+          :label="$t('position.qualifications')" 
+          prop="qualifications"
+          class="form-label-ellipsis"
+        >
           <el-input
             v-model="formData.qualifications"
             type="textarea"
@@ -670,8 +708,54 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
+/* 弹窗样式优化 */
+.position-dialog :deep(.el-dialog) {
+  max-width: 90vw;
+}
+
+.position-form .el-form-item {
+  margin-bottom: 20px;
+}
+
+/* 表单标签优化 */
+.form-label-ellipsis :deep(.el-form-item__label) {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+  padding-right: 10px;
+  display: block;
+  overflow: visible;
+}
+
+/* 英文环境特定优化 */
+:global(.language-en) .form-label-ellipsis :deep(.el-form-item__label) {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.3;
+  font-size: 13px;
+}
+
+/* 移动端响应式 */
+@media screen and (max-width: 992px) {
+  .position-dialog :deep(.el-dialog) {
+    width: 95% !important;
+    max-width: 95vw;
+    margin: 10px auto;
+  }
+  
+  .form-label-ellipsis :deep(.el-form-item__label) {
+    text-align: left;
+    padding-right: 0;
+    margin-bottom: 8px;
+  }
+  
+  .position-form .el-form-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media screen and (max-width: 768px) {
   .search-form {
     flex-direction: column;
   }
@@ -679,10 +763,54 @@ onMounted(() => {
   .search-form .el-form-item {
     margin-right: 0;
     margin-bottom: 10px;
+    width: 100%;
+  }
+  
+  .search-form .el-input,
+  .search-form .el-select {
+    width: 100% !important;
   }
   
   .pagination {
     justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .position-form .el-row {
+    flex-direction: column;
+  }
+  
+  .position-form .el-col {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .page-header .el-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .page-header .el-col {
+    width: 100%;
+    text-align: left !important;
+  }
+  
+  .text-right {
+    text-align: left !important;
+  }
+  
+  .table-card {
+    margin: 0 -10px;
+    width: calc(100% + 20px);
+  }
+  
+  .position-dialog :deep(.el-dialog) {
+    width: 100% !important;
+    max-width: 100vw;
+    margin: 0;
+    border-radius: 0;
   }
 }
 </style>

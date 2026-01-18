@@ -19,19 +19,19 @@
     <!-- 搜索卡片 -->
     <el-card class="search-card">
       <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item :label="$t('员工姓名')">
-          <el-input v-model="searchForm.user_name" clearable :placeholder="$t('common.pleaseEnter')" />
+        <el-form-item :label="$t('user.realName')">
+          <el-input v-model="searchForm.user_name" clearable :placeholder="$t('common.pleaseEnter') + $t('user.realName')" />
         </el-form-item>
-        <el-form-item :label="$t('课程名称')">
-          <el-input v-model="searchForm.course_name" clearable :placeholder="$t('common.pleaseEnter')" />
+        <el-form-item :label="$t('course.courseName')">
+          <el-input v-model="searchForm.course_name" clearable :placeholder="$t('common.pleaseEnter') + $t('course.courseName')" />
         </el-form-item>
-        <el-form-item :label="$t('培训状态')">
+        <el-form-item :label="$t('training.status')">
           <el-select v-model="searchForm.status" clearable :placeholder="$t('common.all')">
-            <el-option :label="$t('未开始')" value="not_started" />
-            <el-option :label="$t('进行中')" value="in_progress" />
-            <el-option :label="$t('已完成')" value="completed" />
-            <el-option :label="$t('不合格')" value="failed" />
-            <el-option :label="$t('已过期')" value="expired" />
+            <el-option :label="$t('training.notStarted')" value="not_started" />
+            <el-option :label="$t('training.inProgress')" value="in_progress" />
+            <el-option :label="$t('training.completed')" value="completed" />
+            <el-option :label="$t('training.failed')" value="failed" />
+            <el-option :label="$t('training.expired')" value="expired" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -63,35 +63,35 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="user_name" :label="$t('员工姓名')" width="120" />
-        <el-table-column prop="user_employee_id" :label="$t('员工工号')" width="120" />
-        <el-table-column prop="course_title" :label="$t('课程名称')" min-width="180" show-overflow-tooltip />
-        <el-table-column prop="course_code" :label="$t('课程编码')" width="120" />
-        <el-table-column prop="training_plan_title" :label="$t('培训计划')" width="150" show-overflow-tooltip />
-        <el-table-column prop="status_name" :label="$t('培训状态')" width="100" align="center">
+        <el-table-column prop="user_name" :label="$t('user.realName')" width="120" />
+        <el-table-column prop="user_employee_id" :label="$t('user.employeeId')" width="120" />
+        <el-table-column prop="course_title" :label="$t('course.courseName')" min-width="180" show-overflow-tooltip />
+        <el-table-column prop="course_code" :label="$t('course.courseCode')" width="120" />
+        <el-table-column prop="training_plan_title" :label="$t('training.trainingPlan')" width="150" show-overflow-tooltip />
+        <el-table-column prop="status_name" :label="$t('training.status')" width="100" align="center">
           <template #default="{row}">
             <el-tag :type="getStatusType(row.status)">{{ row.status_name }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="progress" :label="$t('学习进度')" width="120" align="center">
+        <el-table-column prop="progress" :label="$t('training.progress')" width="120" align="center">
           <template #default="{row}">
             <el-progress v-if="row.progress!=null" :percentage="Math.round(row.progress)" :stroke-width="15" :text-inside="true" />
             <span v-else>--</span>
           </template>
         </el-table-column>
-        <el-table-column prop="study_duration_human" :label="$t('学习时长')" width="100" align="center" />
-        <el-table-column prop="score" :label="$t('培训成绩')" width="100" align="center">
-          <template #default="{row}"><span v-if="row.score!=null">{{ row.score }}分</span><span v-else>--</span></template>
+        <el-table-column prop="study_duration_human" :label="$t('training.studyDuration')" width="100" align="center" />
+        <el-table-column prop="score" :label="$t('training.score')" width="100" align="center">
+          <template #default="{row}"><span v-if="row.score!=null">{{ row.score }}{{ $t('exam.point') }}</span><span v-else>--</span></template>
         </el-table-column>
-        <el-table-column prop="start_date" :label="$t('开始时间')" width="160" />
-        <el-table-column prop="complete_date" :label="$t('完成时间')" width="160" />
-        <el-table-column prop="evaluator_name" :label="$t('评估人')" width="120" />
+        <el-table-column prop="start_date" :label="$t('training.startDate')" width="160" />
+        <el-table-column prop="complete_date" :label="$t('training.completeDate')" width="160" />
+        <el-table-column prop="evaluator_name" :label="$t('training.evaluator')" width="120" />
         <el-table-column :label="$t('common.operate')" width="200" fixed="right" align="center">
           <template #default="{row}">
-            <el-button type="primary" :icon="View" link @click="handleView(row)" />
-            <el-button type="primary" :icon="Edit" link @click="handleEdit(row)" />
-            <el-button type="primary" :icon="CircleCheck" link @click="handleEvaluate(row)" />
-            <el-button type="danger" :icon="Delete" link @click="handleDelete(row)" />
+            <el-button type="primary" :icon="View" link @click="handleView(row)" :title="$t('common.view')" />
+            <el-button type="primary" :icon="Edit" link @click="handleEdit(row)" :title="$t('common.edit')" />
+            <el-button type="primary" :icon="CircleCheck" link @click="handleEvaluate(row)" :title="$t('training.evaluate')" />
+            <el-button type="danger" :icon="Delete" link @click="handleDelete(row)" :title="$t('common.delete')" />
           </template>
         </el-table-column>
       </el-table>
@@ -113,15 +113,15 @@
       <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item :label="$t('员工')" prop="user">
-              <el-select v-model="formData.user" filterable style="width:100%" :placeholder="$t('common.pleaseSelect')">
+            <el-form-item :label="$t('user.employee')" prop="user">
+              <el-select v-model="formData.user" filterable style="width:100%" :placeholder="$t('common.pleaseSelect') + $t('user.employee')">
                 <el-option v-for="u in userOptions" :key="u.id" :label="`${u.first_name} ${u.last_name}`" :value="u.id" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="$t('课程')" prop="course">
-              <el-select v-model="formData.course" filterable style="width:100%" :placeholder="$t('common.pleaseSelect')">
+            <el-form-item :label="$t('course.course')" prop="course">
+              <el-select v-model="formData.course" filterable style="width:100%" :placeholder="$t('common.pleaseSelect') + $t('course.course')">
                 <el-option v-for="c in courseOptions" :key="c.id" :label="c.title" :value="c.id" />
               </el-select>
             </el-form-item>
@@ -130,20 +130,20 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item :label="$t('培训计划')" prop="training_plan">
-              <el-select v-model="formData.training_plan" clearable style="width:100%" :placeholder="$t('common.pleaseSelect')">
+            <el-form-item :label="$t('training.trainingPlan')" prop="training_plan">
+              <el-select v-model="formData.training_plan" clearable style="width:100%" :placeholder="$t('common.pleaseSelect') + $t('training.trainingPlan')">
                 <el-option v-for="p in planOptions" :key="p.id" :label="p.title" :value="p.id" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="$t('培训状态')" prop="status">
+            <el-form-item :label="$t('training.status')" prop="status">
               <el-select v-model="formData.status" style="width:100%">
-                <el-option :label="$t('未开始')" value="not_started" />
-                <el-option :label="$t('进行中')" value="in_progress" />
-                <el-option :label="$t('已完成')" value="completed" />
-                <el-option :label="$t('不合格')" value="failed" />
-                <el-option :label="$t('已过期')" value="expired" />
+                <el-option :label="$t('training.notStarted')" value="not_started" />
+                <el-option :label="$t('training.inProgress')" value="in_progress" />
+                <el-option :label="$t('training.completed')" value="completed" />
+                <el-option :label="$t('training.failed')" value="failed" />
+                <el-option :label="$t('training.expired')" value="expired" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -151,16 +151,16 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item :label="$t('学习进度')" prop="progress">
+            <el-form-item :label="$t('training.progress')" prop="progress">
               <el-input-number v-model="formData.progress" :min="0" :max="100" :precision="1" style="width:100%">
                 <template #append>%</template>
               </el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="$t('培训成绩')" prop="score">
+            <el-form-item :label="$t('training.score')" prop="score">
               <el-input-number v-model="formData.score" :min="0" :max="100" :precision="1" style="width:100%">
-                <template #append>分</template>
+                <template #append>{{ $t('exam.point') }}</template>
               </el-input-number>
             </el-form-item>
           </el-col>
@@ -168,19 +168,19 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item :label="$t('开始时间')" prop="start_date">
-              <el-date-picker v-model="formData.start_date" type="datetime" style="width:100%" />
+            <el-form-item :label="$t('training.startDate')" prop="start_date">
+              <el-date-picker v-model="formData.start_date" type="datetime" style="width:100%" :placeholder="$t('common.pleaseSelect') + $t('training.startDate')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="$t('完成时间')" prop="complete_date">
-              <el-date-picker v-model="formData.complete_date" type="datetime" style="width:100%" />
+            <el-form-item :label="$t('training.completeDate')" prop="complete_date">
+              <el-date-picker v-model="formData.complete_date" type="datetime" style="width:100%" :placeholder="$t('common.pleaseSelect') + $t('training.completeDate')" />
             </el-form-item>
           </el-col>
         </el-row>
 
-        <el-form-item :label="$t('备注')" prop="notes">
-          <el-input v-model="formData.notes" type="textarea" :rows="4" :placeholder="$t('common.pleaseEnter')" />
+        <el-form-item :label="$t('common.notes')" prop="notes">
+          <el-input v-model="formData.notes" type="textarea" :rows="4" :placeholder="$t('common.pleaseEnter') + $t('common.notes')" />
         </el-form-item>
       </el-form>
 
@@ -191,21 +191,21 @@
     </el-dialog>
 
     <!-- 评估弹窗（同样两步关闭） -->
-    <el-dialog v-model="evaluateDialogVisible" title="培训评估" width="600px">
+    <el-dialog v-model="evaluateDialogVisible" :title="$t('training.evaluate')" width="600px">
       <el-form ref="evaluateFormRef" :model="evaluateForm" :rules="evaluateFormRules" label-width="120px">
-        <el-form-item :label="$t('培训成绩')" prop="score">
+        <el-form-item :label="$t('training.score')" prop="score">
           <el-input-number v-model="evaluateForm.score" :min="0" :max="100" :precision="1" style="width:100%">
-            <template #append>分</template>
+            <template #append>{{ $t('exam.point') }}</template>
           </el-input-number>
         </el-form-item>
-        <el-form-item :label="$t('评估人')">
+        <el-form-item :label="$t('training.evaluator')">
           <el-input :value="evaluateForm.evaluator_name" disabled />
         </el-form-item>
-        <el-form-item label="评估时间" prop="evaluation_date">
-          <el-date-picker v-model="evaluateForm.evaluation_date" type="datetime" style="width:100%" />
+        <el-form-item :label="$t('assessment.evaluationDate')" prop="evaluation_date">
+          <el-date-picker v-model="evaluateForm.evaluation_date" type="datetime" style="width:100%" :placeholder="$t('common.pleaseSelect') + $t('assessment.evaluationDate')" />
         </el-form-item>
-        <el-form-item :label="$t('评估备注')" prop="notes">
-          <el-input v-model="evaluateForm.notes" type="textarea" :rows="4" :placeholder="$t('common.pleaseEnter')" />
+        <el-form-item :label="$t('assessment.evaluationNotes')" prop="notes">
+          <el-input v-model="evaluateForm.notes" type="textarea" :rows="4" :placeholder="$t('common.pleaseEnter') + $t('assessment.evaluationNotes')" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -217,12 +217,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Delete, Download, Search, Refresh, View, Edit, CircleCheck } from '@element-plus/icons-vue'
 import { trainingRecordAPI, courseAPI, trainingPlanAPI, userAPI } from '@/api'
 import { useAuthStore } from '@/store/auth'
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 
 /* ---------------- 表格 / 分页 ---------------- */
@@ -254,9 +256,9 @@ const formData = reactive({
   notes: ''
 })
 const formRules = {
-  user: [{ required: true, message: '请选择员工', trigger: 'change' }],
-  course: [{ required: true, message: '请选择课程', trigger: 'change' }],
-  status: [{ required: true, message: '请选择培训状态', trigger: 'change' }]
+  user: [{ required: true, message: computed(() => t('validation.required', { field: t('user.employee') })).value, trigger: 'change' }],
+  course: [{ required: true, message: computed(() => t('validation.required', { field: t('course.course') })).value, trigger: 'change' }],
+  status: [{ required: true, message: computed(() => t('validation.required', { field: t('training.status') })).value, trigger: 'change' }]
 }
 
 /* ---------------- 评估弹窗 ---------------- */
@@ -272,7 +274,7 @@ const evaluateForm = reactive({
   notes: ''
 })
 const evaluateFormRules = {
-  score: [{ required: true, message: '请输入培训成绩', trigger: 'blur' }]
+  score: [{ required: true, message: computed(() => t('validation.required', { field: t('training.score') })).value, trigger: 'blur' }]
 }
 
 /* ---------------- 下拉选项 ---------------- */
@@ -294,22 +296,37 @@ const loadTableData = async () => {
     tableData.value = data.results || []
     pagination.total = data.count || 0
   } catch {
-    ElMessage.error('加载数据失败')
+    ElMessage.error(t('message.loadingDataFailed'))
   } finally {
     loading.value = false
   }
 }
 const loadUserOptions = async () => {
-  const { data } = await userAPI.getUsers({ size: 1000, is_active: true })
-  userOptions.value = data.results || []
+  try {
+    const { data } = await userAPI.getUsers({ size: 1000, is_active: true })
+    userOptions.value = data.results || []
+  } catch (error) {
+    console.error('加载用户选项失败:', error)
+    ElMessage.error(t('message.loadDataFailed'))
+  }
 }
 const loadCourseOptions = async () => {
-  const { data } = await courseAPI.getCourses({ size: 1000 })
-  courseOptions.value = data.results || []
+  try {
+    const { data } = await courseAPI.getCourses({ size: 1000 })
+    courseOptions.value = data.results || []
+  } catch (error) {
+    console.error('加载课程选项失败:', error)
+    ElMessage.error(t('message.loadDataFailed'))
+  }
 }
 const loadPlanOptions = async () => {
-  const { data } = await trainingPlanAPI.getPlans({ size: 1000 })
-  planOptions.value = data.results || []
+  try {
+    const { data } = await trainingPlanAPI.getPlans({ size: 1000 })
+    planOptions.value = data.results || []
+  } catch (error) {
+    console.error('加载培训计划选项失败:', error)
+    ElMessage.error(t('message.loadDataFailed'))
+  }
 }
 
 /* ---------------- 业务函数 ---------------- */
@@ -320,7 +337,7 @@ const handleCurrentChange = (current) => { pagination.current = current; loadTab
 const handleSelectionChange = (rows) => (selectedRows.value = rows)
 
 const handleAdd = () => {
-  dialogTitle.value = '新增培训记录'
+  dialogTitle.value = t('common.add') + t('nav.trainingRecords')
   isEdit.value = false
   Object.assign(formData, {
     id: null, user: null, course: null, training_plan: null, status: 'not_started',
@@ -329,26 +346,38 @@ const handleAdd = () => {
   dialogVisible.value = true
 }
 const handleEdit = (row) => {
-  dialogTitle.value = '编辑培训记录'
+  dialogTitle.value = t('common.edit') + t('nav.trainingRecords')
   isEdit.value = true
   Object.assign(formData, row)
   dialogVisible.value = true
 }
 const handleView = (row) => console.log('view', row)
 const handleDelete = async (row) => {
-  await ElMessageBox.confirm('确定删除该培训记录吗？', '提示', { type: 'warning' })
-  await trainingRecordAPI.deleteRecord(row.id)
-  ElMessage.success('删除成功')
-  loadTableData()
+  try {
+    await ElMessageBox.confirm(t('message.confirmDelete'), t('common.tip'), { type: 'warning' })
+    await trainingRecordAPI.deleteRecord(row.id)
+    ElMessage.success(t('message.deleteSuccess'))
+    loadTableData()
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error(t('message.deleteFailed'))
+    }
+  }
 }
 const handleBatchDelete = async () => {
-  if (!selectedRows.value.length) return ElMessage.warning('请先选择记录')
-  await ElMessageBox.confirm(`确定批量删除 ${selectedRows.value.length} 个记录吗？`, '提示', { type: 'warning' })
-  await Promise.all(selectedRows.value.map(r => trainingRecordAPI.deleteRecord(r.id)))
-  ElMessage.success('批量删除成功')
-  loadTableData()
+  if (!selectedRows.value.length) return ElMessage.warning(t('message.noSelectedItems'))
+  try {
+    await ElMessageBox.confirm(t('message.confirmBatchDelete'), t('common.tip'), { type: 'warning' })
+    await Promise.all(selectedRows.value.map(r => trainingRecordAPI.deleteRecord(r.id)))
+    ElMessage.success(t('message.deleteSuccess'))
+    loadTableData()
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error(t('message.deleteFailed'))
+    }
+  }
 }
-const handleExport = () => ElMessage.success('导出功能已开发完成')
+const handleExport = () => ElMessage.success(t('message.exportReady'))
 
 /* ---------------- 评估（两步关闭） ---------------- */
 const handleEvaluate = (row) => {
@@ -372,11 +401,11 @@ const handleEvaluateSubmit = async () => {
       evaluation_date: evaluateForm.evaluation_date,
       notes: evaluateForm.notes
     })
-    ElMessage.success('评估成功')
+    ElMessage.success(t('message.evaluateSuccess'))
     evaluateDialogVisible.value = false
     loadTableData()
   } catch {
-    ElMessage.error('评估失败')
+    ElMessage.error(t('message.evaluateFailed'))
   } finally {
     evaluateLoading.value = false
   }
@@ -390,11 +419,11 @@ const handleSubmit = async () => {
     isEdit.value
       ? await trainingRecordAPI.updateRecord(formData.id, formData)
       : await trainingRecordAPI.createRecord(formData)
-    ElMessage.success(isEdit.value ? '更新成功' : '新增成功')
-    dialogVisible.value = false   // 只在这里关闭
+    ElMessage.success(isEdit.value ? t('message.updateSuccess') : t('message.addSuccess'))
+    dialogVisible.value = false
     loadTableData()
   } catch {
-    ElMessage.error(isEdit.value ? '更新失败' : '新增失败')
+    ElMessage.error(isEdit.value ? t('message.updateFailed') : t('message.addFailed'))
   } finally {
     submitLoading.value = false
   }
@@ -412,13 +441,87 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.page-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-header {
+  margin-bottom: 20px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #303133;
+}
+
 .search-card,
 .table-card {
   margin-bottom: 16px;
 }
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
 .pagination {
   margin-top: 16px;
   display: flex;
   justify-content: flex-end;
+}
+
+/* 英文界面优化 */
+:global(.language-en) .search-form .el-form-item {
+  margin-bottom: 12px;
+}
+
+:global(.language-en) .el-table .el-button--small {
+  padding: 5px 8px;
+  margin: 0 2px;
+}
+
+:global(.language-en) .el-table .el-button [class*=el-icon] + span {
+  margin-left: 2px;
+}
+
+:global(.language-en) .el-form-item__label {
+  white-space: nowrap;
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 1200px) {
+  .search-form {
+    flex-direction: column;
+  }
+  
+  .search-form .el-form-item {
+    width: 100%;
+  }
+  
+  .search-form .el-form-item .el-input,
+  .search-form .el-form-item .el-select {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .page-header .el-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .page-header .el-col {
+    width: 100%;
+    text-align: left !important;
+  }
+  
+  .action-buttons .el-button {
+    margin-bottom: 8px;
+  }
 }
 </style>
