@@ -1,3 +1,4 @@
+// src/store/auth.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { login, logout, getUserInfo, refreshToken } from '@/api/auth'
@@ -24,13 +25,15 @@ export const useAuthStore = defineStore('auth', () => {
     removeUser()
   }
 
+  /* 登录：只有一层 data */
   const loginAction = async (credentials) => {
     isLoading.value = true
     try {
-      const res = await login(credentials)   // 后端返回 { access_token: 'eyJ...', user: {...} }
-      token.value = res.access_token         // 先更新内存
-      setToken(res.access_token)             // 再写 Cookie
-      setUserData(res.user)
+      const res = await login(credentials)   // res.data = {access, refresh, user}
+      const accessToken = res.data.access
+      token.value = accessToken
+      setToken(accessToken)
+      setUserData(res.data.user)
       return res
     } catch (e) {
       clearAuth()
@@ -68,10 +71,12 @@ export const useAuthStore = defineStore('auth', () => {
   const hasPermissions = (perms) =>
     !perms?.length || perms.every(p => userPermissions.value.includes(p))
 
+  /* 刷新 token：同样只有一层 data */
   const refreshTokenAction = async () => {
     const res = await refreshToken()
-    token.value = res.access_token
-    setToken(res.access_token)
+    const accessToken = res.data.access
+    token.value = accessToken
+    setToken(accessToken)
     return res
   }
 

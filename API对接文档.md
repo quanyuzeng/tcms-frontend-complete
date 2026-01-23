@@ -694,6 +694,6 @@ npm run build
 
 ### 环境变量
 ```bash
-VITE_API_BASE_URL=http://localhost:8000/api
+VITE_API_BASE_URL=http://localhost:8080/api
 VITE_APP_NAME=TCMS
 ```
