@@ -99,16 +99,19 @@ const loginRules = {
   password: [{ required: true, message: t('auth.passwordRequired'), trigger: 'blur' }]
 }
 
-// 登录
 const handleLogin = async () => {
   try {
     await loginFormRef.value.validate()
     loading.value = true
     await authStore.loginAction(loginForm)
     ElMessage.success(t('auth.loginSuccess'))
+
+    // 验证 Cookie 写入成功
+    console.log('[login] Cookie 写入后的 token:', authStore.token)
+
     const redirect = router.currentRoute.value.query.redirect || '/'
     console.log('[login] 即将跳转:', redirect)
-    await router.push(redirect)          // 等待跳转完成
+    await router.push(redirect)
   } catch (err) {
     console.error('[login] 登录/跳转失败:', err)
     ElMessage.error(err.message || t('auth.loginFailed'))
@@ -117,7 +120,6 @@ const handleLogin = async () => {
   }
 }
 
-// 忘记密码
 const handleForgotPassword = () => {
   ElMessage.info(t('auth.forgotPasswordFeature'))
 }
@@ -129,7 +131,6 @@ const handleForgotPassword = () => {
   height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
-
 .login-form-container {
   flex: 1;
   display: flex;
@@ -140,44 +141,36 @@ const handleForgotPassword = () => {
   background: white;
   max-width: 500px;
 }
-
 .login-header {
   text-align: center;
   margin-bottom: 40px;
 }
-
 .login-title {
   font-size: 24px;
   font-weight: bold;
   color: #333;
   margin-bottom: 10px;
 }
-
 .login-subtitle {
   font-size: 14px;
   color: #666;
 }
-
 .login-form {
   width: 100%;
   max-width: 360px;
 }
-
 .forgot-password {
   float: right;
 }
-
 .login-button {
   width: 100%;
 }
-
 .login-footer {
   margin-top: 40px;
   text-align: center;
   font-size: 12px;
   color: #999;
 }
-
 .login-background {
   flex: 1;
   display: flex;
@@ -186,36 +179,30 @@ const handleForgotPassword = () => {
   padding: 40px;
   color: white;
 }
-
 .login-background-content {
   max-width: 500px;
 }
-
 .login-background h2 {
   font-size: 32px;
   margin-bottom: 30px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
-
 .login-background ul {
   list-style: none;
   padding: 0;
 }
-
 .login-background li {
   font-size: 18px;
   margin-bottom: 15px;
   padding-left: 30px;
   position: relative;
 }
-
 .login-background li::before {
   content: '✓';
   position: absolute;
   left: 0;
   font-weight: bold;
 }
-
 @media (max-width: 768px) {
   .login-background {
     display: none;

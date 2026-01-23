@@ -232,9 +232,12 @@ router.beforeEach(async (to, from, next) => {
   NProgress.start()
   const authStore = useAuthStore()
 
+  console.log('[guard] to:', to.path, 'isAuth:', authStore.isAuthenticated)
+
   if (to.meta.requiresAuth !== false) {
     if (!authStore.isAuthenticated) {
       await authStore.initializeAuth()
+      console.log('[guard] after init, isAuth:', authStore.isAuthenticated)
       if (!authStore.isAuthenticated) {
         next('/login')
         return
@@ -251,12 +254,7 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  if (to.meta.titleKey) {
-    const { t } = i18n.global
-    document.title = t(to.meta.titleKey) + ' - TCMS'
-  }
-
-  next()
+  next()   // 这里必须显式调用一次
 })
 
 router.afterEach(() => {

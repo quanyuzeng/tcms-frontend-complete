@@ -99,7 +99,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, markRaw } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import * as echarts from 'echarts'
@@ -119,10 +119,10 @@ const { t } = useI18n()
 
 // 统计卡片
 const statCards = ref([
-  { titleKey: 'totalCourses', value: '156', icon: Notebook, color: '#409EFF' },
-  { titleKey: 'totalTrainees', value: '1 234', icon: User, color: '#67C23A' },
-  { titleKey: 'totalExams', value: '892', icon: EditPen, color: '#E6A23C' },
-  { titleKey: 'totalCertificates', value: '567', icon: Certificate, color: '#909399' }
+  { titleKey: 'totalCourses', value: '156', icon: markRaw(Notebook), color: '#409EFF' },
+  { titleKey: 'totalTrainees', value: '1 234', icon: markRaw(User), color: '#67C23A' },
+  { titleKey: 'totalExams', value: '892', icon: markRaw(EditPen), color: '#E6A23C' },
+  { titleKey: 'totalCertificates', value: '567', icon: markRaw(Certificate), color: '#909399' }
 ])
 
 // 图表相关
@@ -136,10 +136,10 @@ const examFilter = ref('all')
 
 // 快捷操作
 const quickActions = ref([
-  { titleKey: 'addCourse', icon: Plus, color: '#409EFF', action: 'course' },
-  { titleKey: 'createTraining', icon: Calendar, color: '#67C23A', action: 'training' },
-  { titleKey: 'scheduleExam', icon: Edit, color: '#E6A23C', action: 'exam' },
-  { titleKey: 'competencyAssessment', icon: Star, color: '#909399', action: 'assessment' }
+  { titleKey: 'addCourse', icon: markRaw(Plus), color: '#409EFF', action: 'course' },
+  { titleKey: 'createTraining', icon: markRaw(Calendar), color: '#67C23A', action: 'training' },
+  { titleKey: 'scheduleExam', icon: markRaw(Edit), color: '#E6A23C', action: 'exam' },
+  { titleKey: 'competencyAssessment', icon: markRaw(Star), color: '#909399', action: 'assessment' }
 ])
 
 // 待办事项
@@ -228,16 +228,15 @@ const initCharts = () => {
 const loadStatistics = async () => {
   // 模拟数据
   statCards.value = [
-    { titleKey: 'totalCourses', value: '156', icon: Notebook, color: '#409EFF' },
-    { titleKey: 'totalTrainees', value: '1 234', icon: User, color: '#67C23A' },
-    { titleKey: 'totalExams', value: '892', icon: EditPen, color: '#E6A23C' },
-    { titleKey: 'totalCertificates', value: '567', icon: Certificate, color: '#909399' }
+    { titleKey: 'totalCourses', value: '156', icon: markRaw(Notebook), color: '#409EFF' },
+    { titleKey: 'totalTrainees', value: '1 234', icon: markRaw(User), color: '#67C23A' },
+    { titleKey: 'totalExams', value: '892', icon: markRaw(EditPen), color: '#E6A23C' },
+    { titleKey: 'totalCertificates', value: '567', icon: markRaw(Certificate), color: '#909399' }
   ]
 }
 
 // 处理快捷操作
 const handleQuickAction = (action) => {
-  const router = useRouter()
   switch (action.action) {
     case 'course':
       router.push('/courses')
@@ -360,10 +359,10 @@ onUnmounted(() => {
   margin-top: 10px;
   font-size: 14px;
   color: #606266;
-  word-break: break-word; /* 允许单词换行 */
-  text-align: center;     /* 文本居中 */
-  white-space: normal;    /* 允许换行 */
-  width: 100%;            /* 确保宽度占满 */
+  word-break: break-word;
+  text-align: center;
+  white-space: normal;
+  width: 100%;
 }
 
 .todo-list {
@@ -374,16 +373,15 @@ onUnmounted(() => {
   margin-left: 10px;
 }
 
-/* 响应式设计 */
 @media (max-width: 768px) {
   .dashboard {
     padding: 10px;
   }
-  
+
   .chart-container {
     height: 250px;
   }
-  
+
   .quick-action-item {
     padding: 15px;
   }

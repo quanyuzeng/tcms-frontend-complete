@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { login, logout, getUserInfo, refreshToken } from '@/api/auth'
-import { setToken, getToken, removeToken } from '@/utils/auth'
+import { setToken, getToken, removeToken, setUser, removeUser } from '@/utils/auth'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
@@ -12,23 +12,25 @@ export const useAuthStore = defineStore('auth', () => {
   const userRoles = computed(() => user.value?.roles?.map(r => r.code) || [])
   const userPermissions = computed(() => user.value?.permissions || [])
 
-  const setUser = (userData) => (user.value = userData)
-  const setTokenData = (tokenData) => {
-    token.value = tokenData
-    setToken(tokenData)
+  const setUserData = (userData) => {
+    user.value = userData
+    setUser(userData)
   }
+
   const clearAuth = () => {
     user.value = null
     token.value = null
     removeToken()
+    removeUser()
   }
 
   const loginAction = async (credentials) => {
     isLoading.value = true
     try {
-      const res = await login(credentials)   // res 就是 { access, user }
-      setTokenData(res.access)
-      setUser(res.user)
+      const res = await login(credentials)   // 后端返回 { access_token: 'eyJ...', user: {...} }
+      token.value = res.access_token         // 先更新内存
+      setToken(res.access_token)             // 再写 Cookie
+      setUserData(res.user)
       return res
     } catch (e) {
       clearAuth()
@@ -44,14 +46,18 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const fetchUserInfo = async () => {
-    const res = await getUserInfo()   // res 就是用户信息
-    setUser(res)
+    const res = await getUserInfo()
+    setUserData(res)
     return res
   }
 
   const initializeAuth = async () => {
-    if (!getToken()) return
-    try { await fetchUserInfo() } catch {
+    const tk = getToken()
+    if (!tk) return
+    try {
+      await fetchUserInfo()
+      token.value = tk
+    } catch {
       clearAuth()
     }
   }
@@ -64,7 +70,8 @@ export const useAuthStore = defineStore('auth', () => {
 
   const refreshTokenAction = async () => {
     const res = await refreshToken()
-    setTokenData(res.access)
+    token.value = res.access_token
+    setToken(res.access_token)
     return res
   }
 
@@ -75,8 +82,6 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     userRoles,
     userPermissions,
-    setUser,
-    setTokenData,
     clearAuth,
     loginAction,
     logoutAction,

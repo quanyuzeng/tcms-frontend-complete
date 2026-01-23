@@ -30,11 +30,13 @@ import enUS from './locales/en-US'
 /* ===== 创建 i18n 实例 ===== */
 export const i18n = createI18n({
   legacy: false,
-  locale: 'en-US',          // 默认英文
+  locale: 'en-US',
   fallbackLocale: 'en-US',
-  messages: { 'zh-CN': zhCN, 'en-US': enUS }
+  messages: {
+    'zh-CN': zhCN,
+    'en-US': enUS   
+  }
 })
-
 /* ===== 创建应用 ===== */
 const app = createApp(App)
 const pinia = createPinia()
