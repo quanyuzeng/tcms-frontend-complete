@@ -32,7 +32,7 @@ export const courseAPI = {
 
   /* ===== 新增 ===== */
   getCategoryTree: () => request.get('/api/training/categories/tree/'),
-  getPositions: (params) => request.get('/api/positions/', { params })
+  getPositions: (params) => request.get('/api/organization/positions/', { params })
 }
 export const userAPI = {
   getUsers: (params) => request.get('/api/users/', { params })

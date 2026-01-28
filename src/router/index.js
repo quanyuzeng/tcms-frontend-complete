@@ -1,6 +1,5 @@
+// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '../store/auth'
-import { i18n } from '../main'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
@@ -26,12 +25,7 @@ const routes = [
         component: () => import('../views/dashboard/Dashboard.vue'),
         meta: { titleKey: 'nav.dashboard', icon: 'dashboard' }
       },
-
-      /* ===== 组织管理 ===== */
-      {
-        path: '/organization',
-        redirect: '/organization/departments'
-      },
+      // ===== 组织管理 =====
       {
         path: '/organization/departments',
         name: 'Departments',
@@ -44,12 +38,7 @@ const routes = [
         component: () => import('../views/organization/Positions.vue'),
         meta: { titleKey: 'nav.positions', icon: 'user' }
       },
-
-      /* ===== 培训管理 ===== */
-      {
-        path: '/training',
-        redirect: '/training/courses'
-      },
+      // ===== 培训管理 =====
       {
         path: '/training/courses',
         name: 'Courses',
@@ -68,12 +57,7 @@ const routes = [
         component: () => import('../views/training/TrainingRecords.vue'),
         meta: { titleKey: 'nav.trainingRecords', icon: 'document' }
       },
-
-      /* ===== 考试管理 ===== */
-      {
-        path: '/examination',
-        redirect: '/examination/question-banks'
-      },
+      // ===== 考试管理 =====
       {
         path: '/examination/question-banks',
         name: 'QuestionBanks',
@@ -92,12 +76,7 @@ const routes = [
         component: () => import('../views/examination/ExamResults.vue'),
         meta: { titleKey: 'nav.examResults', icon: 'trophy' }
       },
-
-      /* ===== 能力管理 ===== */
-      {
-        path: '/competency',
-        redirect: '/competency/competencies'
-      },
+      // ===== 能力管理 =====
       {
         path: '/competency/competencies',
         name: 'Competencies',
@@ -116,12 +95,7 @@ const routes = [
         component: () => import('../views/competency/Certificates.vue'),
         meta: { titleKey: 'nav.certificates', icon: 'document-checked' }
       },
-
-      /* ===== 报表管理 ===== */
-      {
-        path: '/reporting',
-        redirect: '/reporting/reports'
-      },
+      // ===== 报表管理 =====
       {
         path: '/reporting/reports',
         name: 'Reports',
@@ -134,8 +108,7 @@ const routes = [
         component: () => import('../views/reporting/AuditLogs.vue'),
         meta: { titleKey: 'nav.auditLogs', icon: 'warning' }
       },
-
-      /* ===== 系统管理 ===== */
+      // ===== 系统管理 =====
       {
         path: '/system/users',
         name: 'Users',
@@ -148,8 +121,7 @@ const routes = [
         component: () => import('../views/system/Roles.vue'),
         meta: { titleKey: 'nav.roles', icon: 'user-filled' }
       },
-
-      /* ===== 个人中心 ===== */
+      // ===== 个人中心 =====
       {
         path: '/profile',
         name: 'Profile',
@@ -174,10 +146,7 @@ const routes = [
         component: () => import('../views/profile/MyCertificates.vue'),
         meta: { titleKey: 'nav.myCertificates', icon: 'document-checked' }
       },
-
-      /* --------------------------------------------------
-       * 扁平化兼容路径（一次性解决所有 404）
-       * -------------------------------------------------- */
+      /* ===== 扁平化兼容（不新建文件）===== */
       {
         path: '/users',
         name: 'UsersFlat',
@@ -210,14 +179,7 @@ const routes = [
       }
     ]
   },
-
-  /* ===== 404 兜底 ===== */
-  {
-    path: '/:pathMatch(.*)*',
-    name: 'NotFound',
-    component: () => import('../views/error/NotFound.vue'),
-    meta: { titleKey: 'error.notFound', requiresAuth: false }
-  }
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('../views/error/NotFound.vue'), meta: { requiresAuth: false } }
 ]
 
 const router = createRouter({
@@ -225,19 +187,16 @@ const router = createRouter({
   routes
 })
 
-/* --------------------------------------------------
- * 路由守卫
- * -------------------------------------------------- */
+/* ========== 关键修复：延迟获取 authStore，避免提前引用 router ========== */
 router.beforeEach(async (to, from, next) => {
   NProgress.start()
+  // ✅ 动态导入，确保执行时 router 已创建完成
+  const { useAuthStore } = await import('../store/auth')
   const authStore = useAuthStore()
-
-  console.log('[guard] to:', to.path, 'isAuth:', authStore.isAuthenticated)
 
   if (to.meta.requiresAuth !== false) {
     if (!authStore.isAuthenticated) {
       await authStore.initializeAuth()
-      console.log('[guard] after init, isAuth:', authStore.isAuthenticated)
       if (!authStore.isAuthenticated) {
         next('/login')
         return
@@ -248,17 +207,15 @@ router.beforeEach(async (to, from, next) => {
       return
     }
   } else {
+    // 已登录却访问登录页，跳回首页
     if (authStore.isAuthenticated && to.path === '/login') {
       next('/')
       return
     }
   }
-
-  next()   // 这里必须显式调用一次
+  next()
 })
 
-router.afterEach(() => {
-  NProgress.done()
-})
+router.afterEach(() => NProgress.done())
 
 export default router

@@ -168,7 +168,7 @@ server {
     
     # API代理（可选）
     location /api {
-        proxy_pass http://localhost:8000;
+        proxy_pass http://localhost:8080;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -231,8 +231,8 @@ sudo yum install httpd
     </Directory>
     
     # API代理（可选）
-    ProxyPass /api http://localhost:8000/api
-    ProxyPassReverse /api http://localhost:8000/api
+    ProxyPass /api http://localhost:8080/api
+    ProxyPassReverse /api http://localhost:8080/api
     
     # 静态资源缓存
     <FilesMatch "\.(js|css|png|jpg|jpeg|gif|ico|svg)$">
@@ -393,7 +393,7 @@ server {
     
     # API代理
     location /api {
-        proxy_pass http://localhost:8000;
+        proxy_pass http://localhost:8080;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -408,7 +408,7 @@ server {
 创建 `.env` 文件：
 ```bash
 # API基础URL
-VITE_API_BASE_URL=http://localhost:8000
+VITE_API_BASE_URL=http://localhost:8080
 
 # 应用名称
 VITE_APP_NAME=TCMS培训系统
@@ -560,7 +560,7 @@ location / {
 **解决**: 后端配置CORS头或使用Nginx代理
 ```nginx
 location /api {
-    proxy_pass http://localhost:8000;
+    proxy_pass http://localhost:8080;
     add_header Access-Control-Allow-Origin *;
 }
 ```
