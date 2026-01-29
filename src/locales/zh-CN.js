@@ -1,3 +1,4 @@
+// src/locales/zh-CN.js
 export default {
   common: {
     undefined: '未知',
@@ -43,6 +44,7 @@ export default {
     close: '关闭',
     refresh: '刷新',
     operate: '操作',
+    operation: '操作',
     success: '成功',
     failed: '失败',
     yes: '是',

@@ -11,8 +11,12 @@
           sub-title="请选择左侧菜单中的具体功能模块"
         >
           <template #extra>
-            <el-button type="primary" @click="$router.push('/departments')">{{ $t("部门管理") }}</el-button>
-            <el-button type="primary" @click="$router.push('/positions')">{{ $t("岗位管理") }}</el-button>
+            <el-button type="primary" @click="$router.push('/departments')">
+              {{ $t("部门管理") }}
+            </el-button>
+            <el-button type="primary" @click="$router.push('/positions')">
+              {{ $t("岗位管理") }}
+            </el-button>
           </template>
         </el-result>
       </el-card>
@@ -21,5 +25,14 @@
 </template>
 
 <script setup>
-// 组织管理首页
+// 组织管理首页 - 可添加加载状态和功能说明
+defineOptions({
+  name: 'OrganizationIndex'
+})
 </script>
+
+<style scoped>
+.page-header {
+  margin-bottom: 20px;
+}
+</style>

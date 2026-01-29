@@ -372,7 +372,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
   Plus, 
@@ -539,6 +539,7 @@ const loadData = async () => {
   } catch (error) {
     ElMessage.error('加载数据失败')
     console.error('加载岗位数据失败:', error)
+    tableData.value = []
   } finally {
     loading.value = false
   }
@@ -576,10 +577,29 @@ const handleSelectionChange = (val) => {
 const handleAdd = () => {
   dialogTitle.value = '新增岗位'
   dialogType.value = 'add'
+  // 重置表单数据
+  Object.assign(formData, {
+    id: null,
+    name: '',
+    code: '',
+    level: 'junior',
+    department: '',
+    employeeCount: 0,
+    requiredTrainingHours: 0,
+    minExperience: 0,
+    minEducation: 'bachelor',
+    responsibilities: '',
+    qualifications: '',
+    status: 'enabled'
+  })
   dialogVisible.value = true
 }
 
 const handleEdit = (row) => {
+  if (!row || !row.id) {
+    ElMessage.error('请选择有效的岗位')
+    return
+  }
   dialogTitle.value = '编辑岗位'
   dialogType.value = 'edit'
   Object.assign(formData, row)
@@ -587,11 +607,16 @@ const handleEdit = (row) => {
 }
 
 const handleView = (row) => {
-  // 查看详情
+  if (!row) return
   ElMessage.info('查看功能开发中...')
 }
 
 const handleDelete = async (row) => {
+  if (!row || !row.id) {
+    ElMessage.error('请选择有效的岗位')
+    return
+  }
+  
   try {
     await ElMessageBox.confirm('确定要删除该岗位吗？', '提示', {
       type: 'warning'
@@ -607,6 +632,7 @@ const handleDelete = async (row) => {
 }
 
 const handleStatusChange = async (row) => {
+  if (!row) return
   try {
     ElMessage.success('状态更新成功')
   } catch (error) {
@@ -621,7 +647,7 @@ const handleExport = () => {
 
 const handleSubmit = async () => {
   try {
-    await formRef.value.validate()
+    await formRef.value?.validate()
     submitLoading.value = true
     
     // 模拟提交
@@ -642,20 +668,23 @@ const handleSubmit = async () => {
 
 const handleDialogClose = () => {
   dialogVisible.value = false
-  formRef.value?.resetFields()
-  Object.assign(formData, {
-    id: null,
-    name: '',
-    code: '',
-    level: 'junior',
-    department: '',
-    employeeCount: 0,
-    requiredTrainingHours: 0,
-    minExperience: 0,
-    minEducation: 'bachelor',
-    responsibilities: '',
-    qualifications: '',
-    status: 'enabled'
+  // 使用 nextTick 确保表单重置在对话框关闭后执行
+  nextTick(() => {
+    formRef.value?.resetFields()
+    Object.assign(formData, {
+      id: null,
+      name: '',
+      code: '',
+      level: 'junior',
+      department: '',
+      employeeCount: 0,
+      requiredTrainingHours: 0,
+      minExperience: 0,
+      minEducation: 'bachelor',
+      responsibilities: '',
+      qualifications: '',
+      status: 'enabled'
+    })
   })
 }
 
@@ -672,6 +701,10 @@ const getLevelTagType = (level) => {
 // 生命周期
 onMounted(() => {
   loadData()
+})
+
+defineOptions({
+  name: 'PositionsManage'
 })
 </script>
 

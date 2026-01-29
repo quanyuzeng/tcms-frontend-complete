@@ -1,3 +1,4 @@
+// src/locales/en-US.js
 export default {
   common: {
     undefined: 'Unknown',
@@ -43,6 +44,7 @@ export default {
     close: 'Close',
     refresh: 'Refresh',
     operate: 'Operation',
+    operation: 'Operation',
     success: 'Success',
     failed: 'Failed',
     yes: 'Yes',
@@ -120,6 +122,7 @@ export default {
     category: 'Category',
     prerequisites: 'Prerequisites',
     tags: 'Tags',
+    status: 'Status',
     draft: 'Draft',
     published: 'Published',
     archived: 'Archived',
@@ -265,7 +268,6 @@ export default {
     viewCount: 'View Count',
     enrollmentCount: 'Enrollment Count',
     completionCount: 'Completion Count',
-    completionRate: 'Completion Rate',
     avgScore: 'Average Score'
   },
   training: {
